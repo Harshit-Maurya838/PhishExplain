@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishExplain | Privacy-First Phishing Analysis</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                </svg>
+                <h1>PhishExplain</h1>
+            </div>
+            <p class="tagline">Local, privacy-first email analysis</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="input-section">
+            <h2>Analyze suspicious text</h2>
+            <p>Paste an email or message below. The analysis runs entirely on your device.</p>
+            <textarea id="emailInput" placeholder="Paste email content here... (e.g., 'URGENT: Verify your account immediately at http://192.168.1.1')" rows="8"></textarea>
+            <button id="analyzeBtn" class="btn primary-btn">
+                <span>Analyze Text</span>
+                <div class="loader hidden"></div>
+            </button>
+        </section>
+
+        <section id="resultsSection" class="results-section hidden">
+            <div class="results-grid">
+                
+                <!-- Left Column: Summary and Highlights -->
+                <div class="analysis-column">
+                    <div class="card score-card">
+                        <div class="score-header">
+                            <h3>Risk Assessment</h3>
+                            <span id="riskLevelBadge" class="badge">Medium</span>
+                        </div>
+                        <div class="score-display">
+                            <div class="score-ring">
+                                <svg viewBox="0 0 36 36" class="circular-chart">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path id="scoreCircle" class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <text id="scoreText" x="18" y="20.35" class="percentage">0</text>
+                                </svg>
+                            </div>
+                            <div class="score-info">
+                                <p id="scoreDescription" class="summary-text hidden">Analysis complete. Review the highlighted flags below.</p>
+                                <div id="threatSummaryBox" class="threat-summary-box hidden">
+                                    <h4>Threat Summary</h4>
+                                    <p id="threatSummaryText"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card highlight-card">
+                        <h3>Analyzed Content</h3>
+                        <div id="highlightedText" class="highlighted-content">
+                            <!-- Highlights injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Detailed Explanations -->
+                <div class="details-column">
+                    <div class="card flags-card">
+                        <h3>Detection Explanations</h3>
+                        <p class="flags-subtitle">Why this content was flagged:</p>
+                        <div id="flagsContainer" class="flags-list">
+                            <!-- Flag items injected here -->
+                        </div>
+                        <div id="noFlagsMessage" class="hidden empty-state">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="m9 12 2 2 4-4"></path>
+                            </svg>
+                            <p>No clear phishing indicators found.</p>
+                            <small>Always remain cautious, even if no flags are detected.</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>PhishExplain Prototype &bull; Powered by localized rule engine</p>
+        </div>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
