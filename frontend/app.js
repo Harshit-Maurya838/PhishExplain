@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const riskLevelBadge = document.getElementById('riskLevelBadge');
     const scoreCircle = document.getElementById('scoreCircle');
     const scoreText = document.getElementById('scoreText');
+    const scoreDescription = document.getElementById('scoreDescription');
+    const scoreBreakdown = document.getElementById('scoreBreakdown');
+    const aiScoreBar = document.getElementById('aiScoreBar');
+    const aiScoreVal = document.getElementById('aiScoreVal');
+    const heuristicScoreBar = document.getElementById('heuristicScoreBar');
+    const heuristicScoreVal = document.getElementById('heuristicScoreVal');
     const threatSummaryBox = document.getElementById('threatSummaryBox');
     const threatSummaryText = document.getElementById('threatSummaryText');
     const flagsContainer = document.getElementById('flagsContainer');
@@ -62,8 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderResults(data) {
         // 1. Update Score Ring
-        const score = data.risk_score;
-        scoreText.textContent = score;
+        const score = data.final_score;
+        scoreText.textContent = Math.round(score);
         scoreCircle.setAttribute('stroke-dasharray', `${score}, 100`);
         
         // Remove old classes
@@ -75,17 +81,32 @@ document.addEventListener('DOMContentLoaded', () => {
         riskLevelBadge.classList.add(levelLower);
         riskLevelBadge.textContent = `${data.risk_level} Risk`;
 
-        // 2. Insert Highlighted HTML & Threat Summary
+        // 2. Show analysis complete description
+        scoreDescription.textContent = 'Analysis complete. Review the highlighted flags below.';
+        scoreDescription.classList.remove('hidden');
+
+        // 3. Score breakdown bars (AI + Heuristic)
+        const aiPct = Math.round(data.ai_score);
+        const hPct = Math.min(Math.round(data.heuristic_score), 100);
+        aiScoreVal.textContent = aiPct;
+        heuristicScoreVal.textContent = hPct;
+        setTimeout(() => {
+            aiScoreBar.style.width = `${aiPct}%`;
+            heuristicScoreBar.style.width = `${hPct}%`;
+        }, 50);
+        scoreBreakdown.classList.remove('hidden');
+
+        // 4. Insert Highlighted HTML & Threat Summary
         highlightedTextContainer.innerHTML = data.highlighted_html;
         
-        if (data.threat_summary) {
+        if (data.summary) {
             threatSummaryBox.classList.remove('hidden');
-            threatSummaryText.textContent = data.threat_summary;
+            threatSummaryText.textContent = data.summary;
         } else {
             threatSummaryBox.classList.add('hidden');
         }
 
-        // 3. Render Explanations
+        // 5. Render Explanations
         flagsContainer.innerHTML = '';
         
         if (data.flags && data.flags.length > 0) {
@@ -108,9 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 flagEl.innerHTML = `
                     <div class="flag-header">
                         <h4>${flag.type}</h4>
-                        <span class="flag-score">+${flag.score} risk (Conf: ${flag.confidence})</span>
+                        <span class="flag-score">+${flag.score} risk &bull; ${Math.round(flag.confidence * 100)}% confidence</span>
                     </div>
-                    <div class="flag-match">"${flag.matched_text}"</div>
+                    <div class="flag-match">&ldquo;${flag.matched_text}&rdquo;</div>
                     <div class="flag-details">
                         <div class="detail-row">
                             <span class="detail-label">Tactics</span>

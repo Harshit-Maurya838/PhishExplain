@@ -257,6 +257,64 @@ textarea:focus {
     text-anchor: middle;
 }
 
+/* Score Breakdown Bars */
+.score-breakdown {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.breakdown-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.breakdown-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.breakdown-weight {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.breakdown-bar-track {
+    flex: 1;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.breakdown-bar {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.9s ease-out;
+}
+
+.breakdown-bar.ai-bar {
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+}
+
+.breakdown-bar.heuristic-bar {
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+}
+
+.breakdown-val {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 24px;
+    text-align: right;
+}
+
 .threat-summary-box {
     margin-top: 16px;
     padding: 12px;
