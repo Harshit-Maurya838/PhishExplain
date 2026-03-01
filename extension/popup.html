@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishExplain</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+      <span>PhishExplain</span>
+    </div>
+    <p class="tagline">Local phishing detection</p>
+  </header>
+
+  <main>
+    <!-- Analyze button -->
+    <button id="analyzeBtn" class="btn">
+      <span id="btnLabel">Analyze Current Page</span>
+      <div id="spinner" class="spinner hidden"></div>
+    </button>
+
+    <!-- Error state -->
+    <div id="errorBox" class="error-box hidden">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p id="errorText"></p>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="results hidden">
+
+      <!-- Risk Level Badge + Final Score -->
+      <div class="score-header">
+        <div class="score-block">
+          <span class="score-num" id="finalScore">—</span>
+          <span class="score-label">/ 100</span>
+        </div>
+        <span id="riskBadge" class="badge">—</span>
+      </div>
+
+      <!-- Score progress bar -->
+      <div class="bar-track">
+        <div id="scoreBar" class="bar" style="width: 0%"></div>
+      </div>
+
+      <!-- Sub-scores -->
+      <div class="sub-scores">
+        <div class="sub-item">
+          <span class="sub-label">AI Score</span>
+          <span id="aiScore" class="sub-val">—</span>
+        </div>
+        <div class="divider"></div>
+        <div class="sub-item">
+          <span class="sub-label">Heuristic Score</span>
+          <span id="heuristicScore" class="sub-val">—</span>
+        </div>
+      </div>
+
+      <!-- Threat Summary -->
+      <div class="summary-box">
+        <p class="summary-title">Threat Summary</p>
+        <p id="summaryText" class="summary-text"></p>
+      </div>
+
+      <!-- Privacy note -->
+      <p class="privacy-note">
+        🔒 All analysis runs locally. No data leaves your device.
+      </p>
+
+    </div>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>

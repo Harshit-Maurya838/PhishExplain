@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const heuristicScoreVal = document.getElementById('heuristicScoreVal');
     const threatSummaryBox = document.getElementById('threatSummaryBox');
     const threatSummaryText = document.getElementById('threatSummaryText');
+    const heuristicBreakdownCard = document.getElementById('heuristicBreakdownCard');
+    const heuristicBreakdownList = document.getElementById('heuristicBreakdownList');
     const flagsContainer = document.getElementById('flagsContainer');
     const highlightedTextContainer = document.getElementById('highlightedText');
     const noFlagsMessage = document.getElementById('noFlagsMessage');
@@ -106,7 +108,58 @@ document.addEventListener('DOMContentLoaded', () => {
             threatSummaryBox.classList.add('hidden');
         }
 
-        // 5. Render Explanations
+        // 5. Heuristic Category Breakdown
+        if (data.heuristic_breakdown) {
+            const hb = data.heuristic_breakdown;
+            // Max value for proportional bar widths (cap at 100 for display)
+            const maxHeuristic = Math.max(
+                hb.impersonation, hb.portal_context, hb.url_structure,
+                hb.business_pretext, hb.psychological_tactics, 1
+            );
+
+            const categories = [
+                { key: 'impersonation',        label: 'Impersonation',         cssClass: 'cat-impersonation', value: hb.impersonation },
+                { key: 'portal_context',        label: 'Portal / Credentials',  cssClass: 'cat-portal',        value: hb.portal_context },
+                { key: 'url_structure',          label: 'URL / Link Analysis',   cssClass: 'cat-url',           value: hb.url_structure },
+                { key: 'business_pretext',       label: 'Business Pretext',      cssClass: 'cat-pretext',       value: hb.business_pretext },
+                { key: 'psychological_tactics',  label: 'Psychological Tactics', cssClass: 'cat-psych',         value: hb.psychological_tactics },
+            ];
+
+            heuristicBreakdownList.innerHTML = '';
+            const barEls = [];
+
+            categories.forEach(cat => {
+                const pct = Math.min(Math.round((cat.value / maxHeuristic) * 100), 100);
+                const row = document.createElement('div');
+                row.className = 'hb-row';
+                row.innerHTML = `
+                    <div class="hb-label-row">
+                        <span class="hb-label">${cat.label}</span>
+                        <span class="hb-value">+${cat.value}</span>
+                    </div>
+                    <div class="hb-bar-track">
+                        <div class="hb-bar ${cat.cssClass}" data-pct="${pct}" style="width:0%"></div>
+                    </div>
+                `;
+                heuristicBreakdownList.appendChild(row);
+                barEls.push(row.querySelector('.hb-bar'));
+            });
+
+            // Show card only when at least one category has nonzero score
+            const hasAny = categories.some(c => c.value > 0);
+            if (hasAny) {
+                heuristicBreakdownCard.classList.remove('hidden');
+                setTimeout(() => {
+                    barEls.forEach(bar => {
+                        bar.style.width = `${bar.dataset.pct}%`;
+                    });
+                }, 50);
+            } else {
+                heuristicBreakdownCard.classList.add('hidden');
+            }
+        }
+
+        // 6. Render Flag Explanations
         flagsContainer.innerHTML = '';
         
         if (data.flags && data.flags.length > 0) {

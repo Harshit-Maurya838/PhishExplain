@@ -474,6 +474,59 @@ textarea:focus {
     margin-bottom: 8px;
 }
 
+/* Heuristic Category Breakdown Card */
+.heuristic-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hb-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hb-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hb-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.hb-value {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.hb-bar-track {
+    height: 8px;
+    background-color: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.hb-bar {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.9s ease-out;
+}
+
+.hb-bar.cat-impersonation  { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+.hb-bar.cat-portal         { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+.hb-bar.cat-url            { background: linear-gradient(90deg, #ef4444, #f87171); }
+.hb-bar.cat-pretext        { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.hb-bar.cat-psych          { background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
+
 /* Footer */
 footer {
     text-align: center;

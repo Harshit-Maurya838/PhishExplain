@@ -1,0 +1,285 @@
+/* ── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:        #0F172A;
+  --surface:   #1E293B;
+  --border:    #334155;
+  --text:      #F1F5F9;
+  --muted:     #94A3B8;
+  --primary:   #6366F1;
+
+  --low:    #10B981;
+  --medium: #F59E0B;
+  --high:   #EF4444;
+
+  --radius: 10px;
+}
+
+body {
+  width: 340px;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* ── Header ────────────────────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--primary);
+}
+
+.logo svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.tagline {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── Main layout ───────────────────────────────────────────────────── */
+main {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Analyze Button ────────────────────────────────────────────────── */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn:hover:not(:disabled) {
+  background: #4F46E5;
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ────────────────────────────────────────────────────────── */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error Box ──────────────────────────────────────────────────────── */
+.error-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  color: #FCA5A5;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.error-box svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #EF4444;
+}
+
+/* ── Results ────────────────────────────────────────────────────────── */
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+/* Score row */
+.score-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.score-block {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.score-num {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  transition: color 0.3s;
+}
+
+/* Colour the score number to match risk level */
+.score-low    { color: var(--low); }
+.score-medium { color: var(--medium); }
+.score-high   { color: var(--high); }
+.score-unknown { color: var(--muted); }
+
+.score-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Risk Badges */
+.badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.badge-low    { background: rgba(16,185,129,0.18); color: var(--low); }
+.badge-medium { background: rgba(245,158,11,0.18); color: var(--medium); }
+.badge-high   { background: rgba(239,68,68,0.18);  color: var(--high); }
+.badge-unknown { background: rgba(148,163,184,0.18); color: var(--muted); }
+
+/* Score bar */
+.bar-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease-out;
+}
+
+.bar-low    { background: linear-gradient(90deg, #10B981, #34D399); }
+.bar-medium { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
+.bar-high   { background: linear-gradient(90deg, #EF4444, #F87171); }
+.bar-unknown { background: var(--muted); }
+
+/* Sub-scores row */
+.sub-scores {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.sub-item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.sub-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+
+.sub-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.divider {
+  width: 1px;
+  height: 32px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* Threat Summary */
+.summary-box {
+  padding: 10px 12px;
+  background: rgba(15, 23, 42, 0.5);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 8px 8px 0;
+}
+
+.summary-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.summary-text {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+/* Privacy note */
+.privacy-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  padding-top: 2px;
+}
+
+/* ── Utility ────────────────────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
