@@ -7,13 +7,32 @@ class Highlighter:
         self.wrap_template = '<mark class="phish-flag {}">{}</mark>'
         
     def _get_class_for_type(self, type_str: str) -> str:
-        # Simple mapping for CSS classes
-        if type_str in ["Urgency Manipulation", "Fear Tactics", "Authority Impersonation", "Contextual Urgency"]:
+        # Critical — highest visual emphasis
+        if type_str in {
+            "Suspicious URL Pattern", "Credential Request",
+            "Fake Subdomain Impersonation", "Homograph Attack (Punycode/Cyrillic)",
+            "Suspicious URL (IP Based)", "Portal Context",
+            "Institutional Impersonation"
+        }:
+            return "critical-risk"
+
+        # High risk
+        if type_str in {
+            "Urgency Manipulation", "Fear Tactics", "Authority Impersonation",
+            "Contextual Urgency", "Suspicious Domain Keyword",
+            "Business Pretext"
+        }:
             return "high-risk"
-        if type_str in ["Suspicious URL Pattern", "Credential Request", "Fake Subdomain Impersonation", "Homograph Attack (Punycode/Cyrillic)", "Suspicious URL (IP Based)"]:
-             return "critical-risk"
-        if type_str in ["Financial Bait", "Scarcity Manipulation", "Suspicious URL (TLD)", "Shortened Link"]:
-             return "medium-risk"
+
+        # Medium risk
+        if type_str in {
+            "Financial Bait", "Scarcity Manipulation",
+            "Suspicious URL (TLD)", "Shortened Link",
+            "Multi-Hyphen Domain", "Long Domain",
+            "Insecure Link (HTTP)", "Suspicious URL Keyword"
+        }:
+            return "medium-risk"
+
         return "low-risk"
 
     def highlight(self, original_text: str, features: List[Dict[str, Any]]) -> str:

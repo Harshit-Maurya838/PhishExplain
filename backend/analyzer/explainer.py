@@ -63,6 +63,38 @@ class Explainer:
                  "why_used": "Uses characters from different alphabets (like Cyrillic 'a') that look identical to Latin characters.",
                  "attacker_gain": "Visually spoofs a legitimate domain perfectly, bypassing normal visual inspection.",
                  "how_to_verify": "Type the domain manually into your browser instead of clicking or copying the link."
+            },
+            # ── Advanced URL Intelligence ──
+            "Suspicious Domain Keyword": {
+                "why_used": "Embeds trust-sounding words (secure, login, verify, banking, portal) directly into an attacker-controlled domain name.",
+                "attacker_gain": "Tricks users into believing the domain belongs to a legitimate service, increasing the chance of credential submission.",
+                "how_to_verify": "Read the root domain carefully (the part just before the .com/.org). If it is not the exact official brand name, it is fake."
+            },
+            "Multi-Hyphen Domain": {
+                "why_used": "Uses multiple hyphens to construct long, deceptive domain names that mimic official services (e.g. secure-account-login-portal.com).",
+                "attacker_gain": "Makes the domain appear descriptive and official while obscuring a malicious registrant.",
+                "how_to_verify": "Legitimate services almost never have two or more hyphens in their root domain. Navigate directly to the known official website instead."
+            },
+            "Long Domain": {
+                "why_used": "Registers abnormally long domain names to bury the real malicious part at the beginning while padding with familiar-looking text.",
+                "attacker_gain": "Overwhelms the user's visual parsing of the URL, making them focus on the path rather than the suspicious domain.",
+                "how_to_verify": "Hover over the link to reveal the full URL. Legitimate services use short, recognizable domain names."
+            },
+            # ── Contextual Composite Rules ──
+            "Institutional Impersonation": {
+                "why_used": "Impersonates a trusted internal or institutional team (IT, HR, Payroll, Support) to leverage authority and reduce suspicion.",
+                "attacker_gain": "Employees naturally trust messages appearing to come from internal departments and are less likely to question requests from them.",
+                "how_to_verify": "Contact the department directly via a known internal channel (phone, Slack, Teams). Never act on email requests that include links before verifying."
+            },
+            "Portal Context": {
+                "why_used": "Uses action-triggering language (login, confirm, verify, portal, access) alongside an external link to create a fake login or verification page.",
+                "attacker_gain": "Direct credential harvesting — the user believes they are logging into a real service portal.",
+                "how_to_verify": "Never login from an email link. Open a new browser tab and navigate to the service's official URL manually."
+            },
+            "Business Pretext": {
+                "why_used": "Frames the phishing attempt as a routine business operation (payroll update, system upgrade, document shared) to appear normal and non-threatening.",
+                "attacker_gain": "Lowers the user's guard by disguising the attack as standard corporate procedure, bypassing security awareness training.",
+                "how_to_verify": "Verify the supposed business action through an independent internal channel before clicking any links or downloading files."
             }
         }
 
