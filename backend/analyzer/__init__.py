@@ -4,6 +4,7 @@ from .risk_scorer import RiskScorer
 from .explainer import Explainer
 from .highlighter import Highlighter
 from .threat_summary_generator import ThreatSummaryGenerator
+from .ai_classifier import AIClassifier
 
 __all__ = [
     "FeatureExtractor",
@@ -11,5 +12,6 @@ __all__ = [
     "RiskScorer",
     "Explainer",
     "Highlighter",
-    "ThreatSummaryGenerator"
+    "ThreatSummaryGenerator",
+    "AIClassifier"
 ]

@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 import os
 import logging
 
-from analyzer import FeatureExtractor, RuleEngine, RiskScorer, Explainer, Highlighter, ThreatSummaryGenerator
+from analyzer import FeatureExtractor, RuleEngine, RiskScorer, Explainer, Highlighter, ThreatSummaryGenerator, AIClassifier
 
 # Configure structured routing logger
 logger = logging.getLogger("PhishExplain.API")
@@ -29,12 +29,19 @@ rule_engine = RuleEngine()
 explainer = Explainer()
 highlighter = Highlighter()
 threat_generator = ThreatSummaryGenerator()
+ai_classifier = AIClassifier()
 # In a real app the RiskScorer would need to map the risk categories 
 # But for now we just use a basic thresholding as requested.
 # I'll add a helper function instead of a heavy class for the final scoring
-def calculate_risk(features: List[Dict[str, Any]]) -> Dict[str, Any]:
+def calculate_risk(features: List[Dict[str, Any]], ai_result: dict) -> Dict[str, Any]:
     total_score = sum([f.get("score", 0) for f in features])
-    final_score = min(total_score, 100)
+    heuristic_score = min(total_score, 100)
+    
+    ai_score = ai_result.get("ai_score", 0.0)
+    
+    # Calculate hybrid score
+    final_score = (0.6 * ai_score) + (0.4 * heuristic_score)
+    final_score = max(0, min(final_score, 100)) # clamp to 0-100
     
     if final_score <= 30:
         level = "Low"
@@ -44,8 +51,10 @@ def calculate_risk(features: List[Dict[str, Any]]) -> Dict[str, Any]:
         level = "High"
         
     return {
-        "risk_score": final_score,
-        "risk_level": level
+        "final_score": round(final_score, 2),
+        "risk_level": level,
+        "heuristic_score": heuristic_score,
+        "ai_score": ai_score
     }
 
 class AnalyzeRequest(BaseModel):
@@ -76,22 +85,28 @@ async def analyze(request: AnalyzeRequest):
     # 3. Explanation Engine (Multidimensional)
     explained_features = explainer.explain(scored_features)
     
-    # 4. Risk Scoring System
-    risk_data = calculate_risk(explained_features)
-    logger.info(f"Final Risk Calculated: {risk_data['risk_score']} ({risk_data['risk_level']})")
+    # 4. AI Classification
+    logger.info("Running AI Classification.")
+    ai_result = ai_classifier.analyze(text)
     
-    # 5. Threat Summary Generation
+    # 5. Risk Scoring System (Hybrid)
+    risk_data = calculate_risk(explained_features, ai_result)
+    logger.info(f"Final Risk Calculated: {risk_data['final_score']} ({risk_data['risk_level']}) (AI: {risk_data['ai_score']}, Heuristic: {risk_data['heuristic_score']})")
+    
+    # 6. Threat Summary Generation
     threat_summary = threat_generator.generate(risk_data["risk_level"], explained_features)
     logger.info("Generated contextual threat summary.")
     
-    # 6. Highlighting Engine
+    # 7. Highlighting Engine
     highlighted_html = highlighter.highlight(text, explained_features)
     
     logger.info("Pipeline complete. Returning response payload.")
     return JSONResponse(content={
-        "risk_score": risk_data["risk_score"],
+        "final_score": risk_data["final_score"],
         "risk_level": risk_data["risk_level"],
-        "threat_summary": threat_summary,
+        "ai_score": risk_data["ai_score"],
+        "heuristic_score": risk_data["heuristic_score"],
+        "summary": threat_summary,
         "flags": explained_features,
         "highlighted_html": highlighted_html
     })
