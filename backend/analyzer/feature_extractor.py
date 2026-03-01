@@ -29,14 +29,15 @@ class FeatureExtractor:
         # Base fallback urgency if not contextual (scored lower in engine)
         self.generic_urgency_phrases = [
             r"urgent", r"immediately", r"act now", r"action required", 
-            r"within 24 hours", r"asap"
+            r"within 24 hours", r"expires today", r"asap"
         ]
 
         # 2. Psychological Patterns
         self.fear_phrases = [
             r"unauthorized access", r"security alert", r"breach", 
             r"compromised", r"stolen", r"police", r"legal action",
-            r"account suspended", r"termination", r"deleted"
+            r"account suspended", r"termination", r"deleted",
+            r"deactivated", r"account will be locked"
         ]
         
         self.authority_phrases = [
@@ -50,7 +51,8 @@ class FeatureExtractor:
         
         self.credential_phrases = [
             r"verify your account", r"login to continue", r"click here to reset",
-            r"confirm your identity", r"update your billing", r"password reset"
+            r"confirm your identity", r"update your billing", r"password reset",
+            r"confirm your password", r"enter OTP", r"validate credentials"
         ]
         
         self.financial_phrases = [
@@ -61,8 +63,9 @@ class FeatureExtractor:
         # 3. URL Intelligence
         self.url_pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         self.ip_url_pattern = r"https?:\/\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
-        self.suspicious_tlds = [r"\.xyz", r"\.top", r"\.ru", r"\.cn", r"\.info"]
+        self.suspicious_tlds = [r"\.xyz", r"\.top", r"\.ru", r"\.net", r"\.cn", r"\.info"]
         self.shortener_domains = [r"bit\.ly", r"tinyurl\.com", r"t\.co", r"goo\.gl", r"is\.gd"]
+        self.suspicious_url_keywords = [r"login", r"verify", r"secure", r"update"]
         
         # Fake subdomains (e.g., paypal.secure-login.com)
         # We look for common brand names used as subdomains on weird root domains
@@ -87,19 +90,31 @@ class FeatureExtractor:
             start = match.start()
             end = match.end()
             
-            # IP based
+            # 1. Insecure HTTP Link
+            if url.lower().startswith("http://"):
+                matches.append({"type": "Insecure Link (HTTP)", "matched_text": url, "start": start, "end": end})
+                logger.info(f"URL: Insecure HTTP link detected -> {url}")
+                continue
+                
+            # 2. IP based
             if re.search(self.ip_url_pattern, url):
                 matches.append({"type": "Suspicious URL (IP Based)", "matched_text": url, "start": start, "end": end})
                 logger.info(f"URL: IP-based URL detected -> {url}")
                 continue
                 
-            # Suspicious TLD
+            # 3. Suspicious TLD
             if any(re.search(tld + r"(/|$)", url, re.IGNORECASE) for tld in self.suspicious_tlds):
                  matches.append({"type": "Suspicious URL (TLD)", "matched_text": url, "start": start, "end": end})
                  logger.info(f"URL: Suspicious TLD detected -> {url}")
                  continue
                  
-            # Shortener
+            # 4. Suspicious URL Keywords (e.g., login, verify in path)
+            if any(re.search(keyword, url, re.IGNORECASE) for keyword in self.suspicious_url_keywords):
+                matches.append({"type": "Suspicious URL Keyword", "matched_text": url, "start": start, "end": end})
+                logger.info(f"URL: Suspicious keyword in URL detected -> {url}")
+                continue
+                 
+            # 5. Shortener
             if any(re.search(short, url, re.IGNORECASE) for short in self.shortener_domains):
                  matches.append({"type": "Shortened Link", "matched_text": url, "start": start, "end": end})
                  logger.info(f"URL: Shortened link detected -> {url}")

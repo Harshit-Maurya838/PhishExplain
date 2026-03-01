@@ -63,18 +63,26 @@ class AIClassifier:
             if raw_label in ['label_1', 'phishing', '1', 'spam', 'malicious']:
                 label = 'phishing'
                 ai_score = confidence * 100
+                if confidence > 0.7:
+                    explanation = "AI language model detected phishing-like linguistic patterns including manipulation or impersonation."
+                elif confidence >= 0.4:
+                    explanation = "AI detected suspicious contextual signals but not strongly conclusive."
+                else:
+                    explanation = "AI model did not detect strong phishing language patterns."
             else:
                 label = 'safe'
                 # If the model explicitly says 'safe' with 99% confidence, 
                 # then ai_score (risk factor) is 1%.
                 ai_score = (1.0 - confidence) * 100 
+                explanation = "AI model did not detect strong phishing language patterns."
 
             logger.info(f"AI Classification complete. Raw Label: {raw_label}, Label: {label}, Confidence: {confidence:.2f}")
 
             return {
                 "ai_score": round(ai_score, 2),
                 "label": label,
-                "confidence": round(confidence, 4)
+                "confidence": round(confidence, 4),
+                "explanation": explanation
             }
         except Exception as e:
             logger.error(f"Error during AI analysis: {e}")
@@ -82,5 +90,6 @@ class AIClassifier:
             return {
                 "ai_score": 0.0,
                 "label": "safe",
-                "confidence": 0.0
+                "confidence": 0.0,
+                "explanation": "AI model did not detect strong phishing language patterns."
             }

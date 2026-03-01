@@ -4,18 +4,20 @@ class RuleEngine:
     def __init__(self):
         # Define baseline weights and dynamic confidences for different feature types
         self.rules = {
-            "Contextual Urgency": {"score": 35, "confidence": 0.95},
+            "Contextual Urgency": {"score": 15, "confidence": 0.95},
             "Generic Urgency": {"score": 15, "confidence": 0.50},
             
-            "Fear Tactics": {"score": 30, "confidence": 0.85},
+            "Fear Tactics": {"score": 20, "confidence": 0.85},
             "Authority Impersonation": {"score": 40, "confidence": 0.80},
             "Scarcity Manipulation": {"score": 25, "confidence": 0.75},
             
-            "Credential Request": {"score": 40, "confidence": 0.90},
+            "Credential Request": {"score": 25, "confidence": 0.90},
             "Financial Bait": {"score": 35, "confidence": 0.80},
             
-            "Suspicious URL (IP Based)": {"score": 50, "confidence": 0.98},
+            "Insecure Link (HTTP)": {"score": 30, "confidence": 0.95},
+            "Suspicious URL (IP Based)": {"score": 30, "confidence": 0.98},
             "Suspicious URL (TLD)": {"score": 30, "confidence": 0.70},
+            "Suspicious URL Keyword": {"score": 30, "confidence": 0.85},
             "Shortened Link": {"score": 20, "confidence": 0.60},
             "Fake Subdomain Impersonation": {"score": 45, "confidence": 0.95},
             "Homograph Attack (Punycode/Cyrillic)": {"score": 55, "confidence": 0.85},

@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 import os
 import logging
+import time
 
 from analyzer import FeatureExtractor, RuleEngine, RiskScorer, Explainer, Highlighter, ThreatSummaryGenerator, AIClassifier
 
@@ -40,12 +41,12 @@ def calculate_risk(features: List[Dict[str, Any]], ai_result: dict) -> Dict[str,
     ai_score = ai_result.get("ai_score", 0.0)
     
     # Calculate hybrid score
-    final_score = (0.6 * ai_score) + (0.4 * heuristic_score)
+    final_score = (0.7 * ai_score) + (0.3 * heuristic_score)
     final_score = max(0, min(final_score, 100)) # clamp to 0-100
     
-    if final_score <= 30:
+    if final_score <= 29:
         level = "Low"
-    elif final_score <= 70:
+    elif final_score <= 59:
         level = "Medium"
     else:
         level = "High"
@@ -54,7 +55,11 @@ def calculate_risk(features: List[Dict[str, Any]], ai_result: dict) -> Dict[str,
         "final_score": round(final_score, 2),
         "risk_level": level,
         "heuristic_score": heuristic_score,
-        "ai_score": ai_score
+        "ai_score": ai_score,
+        "score_breakdown": {
+            "ai_weight": 0.7,
+            "heuristic_weight": 0.3
+        }
     }
 
 class AnalyzeRequest(BaseModel):
@@ -87,17 +92,26 @@ async def analyze(request: AnalyzeRequest):
     
     # 4. AI Classification
     logger.info("Running AI Classification.")
+    start_time = time.time()
     ai_result = ai_classifier.analyze(text)
+    inference_time = round((time.time() - start_time) * 1000, 2)
+    logger.info(f"AI Inference Time: {inference_time}ms")
     
     # 5. Risk Scoring System (Hybrid)
     risk_data = calculate_risk(explained_features, ai_result)
-    logger.info(f"Final Risk Calculated: {risk_data['final_score']} ({risk_data['risk_level']}) (AI: {risk_data['ai_score']}, Heuristic: {risk_data['heuristic_score']})")
+    logger.info(f"Final Risk Calculated: Final: {risk_data['final_score']}, Heuristic: {risk_data['heuristic_score']}, AI: {risk_data['ai_score']}")
     
     # 6. Threat Summary Generation
-    threat_summary = threat_generator.generate(risk_data["risk_level"], explained_features)
+    threat_summary = threat_generator.generate(
+        risk_data["risk_level"], 
+        explained_features, 
+        ai_result.get("explanation", "")
+    )
     logger.info("Generated contextual threat summary.")
     
     # 7. Highlighting Engine
+    # AI only generated string summaries, the `explained_features` array only contains heuristic rule triggers!
+    # Therefore, AI token hallucination is structurally impossible in the HTML highlighting.
     highlighted_html = highlighter.highlight(text, explained_features)
     
     logger.info("Pipeline complete. Returning response payload.")
@@ -106,6 +120,7 @@ async def analyze(request: AnalyzeRequest):
         "risk_level": risk_data["risk_level"],
         "ai_score": risk_data["ai_score"],
         "heuristic_score": risk_data["heuristic_score"],
+        "score_breakdown": risk_data["score_breakdown"],
         "summary": threat_summary,
         "flags": explained_features,
         "highlighted_html": highlighted_html

@@ -4,14 +4,18 @@ class ThreatSummaryGenerator:
     def __init__(self):
         pass
 
-    def generate(self, risk_level: str, explained_features: List[Dict[str, Any]]) -> str:
+    def generate(self, risk_level: str, explained_features: List[Dict[str, Any]], ai_explanation: str = "") -> str:
         """
         Creates a high-level paragraph summarizing the threat landscape of the text.
         """
         if risk_level == "Low" and not explained_features:
+            if ai_explanation:
+                return f"This text appears normal. No immediate phrasing or link threats were detected. {ai_explanation} Maintain basic caution as no automated system is perfect."
             return "This text appears normal. No immediate phrasing or link threats were detected. Maintain basic caution as no automated system is perfect."
 
         if risk_level == "Low":
+            if ai_explanation:
+                return f"This text contains minor suspicious indicators, but no critical flags. {ai_explanation} Proceed with normal caution."
             return "This text contains minor suspicious indicators, but no critical flags. Proceed with normal caution."
 
         # Extract primary tactics
@@ -25,12 +29,6 @@ class ThreatSummaryGenerator:
 
         sentences = []
         
-        # Intro sentence based on risk
-        if risk_level == "High":
-             sentences.append(f"This email is classified as High Risk and is highly suspicious.")
-        elif risk_level == "Medium":
-             sentences.append(f"This email is classified as Medium Risk and requires careful inspection.")
-
         # Tactic summary
         tactic_descriptions = []
         if has_urgency:
@@ -47,16 +45,17 @@ class ThreatSummaryGenerator:
                 tactics_str = ", ".join(tactic_descriptions[:-1]) + ", and " + tactic_descriptions[-1]
             else:
                 tactics_str = tactic_descriptions[0]
-            sentences.append(f"The text {tactics_str}.")
-
-        # Actionable recommendation
-        if has_url_threats and has_cred_fin:
-             sentences.append("Do not click any links or provide personal information. Verify the sender's claims by visiting their official website directly through your browser.")
-        elif has_url_threats:
-             sentences.append("Avoid clicking links within this message as they likely lead to malicious sites.")
-        elif has_cred_fin or has_urgency:
-             sentences.append("Do not let the applied pressure trick you into acting; verify the request through a known, trusted secondary channel.")
-        else:
-             sentences.append("Proceed with extreme caution and verify the source before taking any action.")
+            sentences.append(f"This email {tactics_str}.")
+            
+        # Add AI interpretation reasoning
+        if ai_explanation:
+            # We massage the output slightly if it isn't starting cleanly
+            if not ai_explanation.startswith("The"):
+                sentences.append(f"The {ai_explanation}")
+            else:
+                sentences.append(ai_explanation)
+            
+        # Add final overall risk summary sentence
+        sentences.append(f"Overall risk is {risk_level.upper()}.")
 
         return " ".join(sentences)
